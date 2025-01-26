@@ -1,0 +1,59 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                           http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context-4.3.xsd
+                           http://www.springframework.org/schema/tx
+                           https://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+    <!-- Enable annotation-based Spring configuration -->
+    <context:annotation-config/>
+    
+    <!-- Enable declarative transaction management -->
+    <tx:annotation-driven/>
+
+    <!-- DataSource Bean -->
+    <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" id="dataSource">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/jdbc_pratice"/>
+        <property name="username" value="root"/>
+        <property name="password" value="542666"/>
+    </bean>
+
+    <!-- SessionFactory Bean (Hibernate 5) -->
+    <bean class="org.springframework.orm.hibernate5.LocalSessionFactoryBean" id="sessionFactory">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+        <property name="annotatedClasses">
+            <list>
+                <value>com.spring.orm.entites.Student</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- HibernateTemplate Bean -->
+    <bean class="org.springframework.orm.hibernate5.HibernateTemplate" id="hibernateTemplate">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!-- DAO Bean -->
+    <bean class="com.spring.orm.dao.StudentDaoImpl" id="studentDao">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+
+    <!-- Hibernate Transaction Manager Bean -->
+    <bean class="org.springframework.orm.hibernate5.HibernateTransactionManager" id="transactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+</beans>
